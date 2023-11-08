@@ -18,7 +18,25 @@ function get(db, table, identifierAttr) {
     return new Promise((resolve, reject) => {
         const attrName = Object.keys(identifierAttr)[0]
         const attrValue = identifierAttr[attrName]
-        db.all(`SELECT * FROM ${table} WHERE ${attrName} = ${attrValue}`, (err, rows) => {
+
+        const sql = `SELECT * FROM ${table} WHERE ${attrName} = ${(typeof attrValue === "string")?`"${attrValue}"`:attrValue}`
+        db.all(sql, (err, rows) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
+
+function query(db, table, identifierAttr) {
+    return new Promise((resolve, reject) => {
+        const attrName = Object.keys(identifierAttr)[0]
+        const attrValue = identifierAttr[attrName]
+
+        const sql = `SELECT * FROM ${table} WHERE ${attrName} LIKE '%${attrValue}%'`
+        db.all(sql, (err, rows) => {
             if (err) {
                 reject(err)
             } else {
@@ -70,4 +88,4 @@ function write(db, table, data, identifierAttr) {
     })
 }
 
-module.exports = {open, close, get, insert, write}
+module.exports = {open, close, get, query, insert, write}
