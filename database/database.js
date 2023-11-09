@@ -24,18 +24,19 @@ function get(db, table, identifierAttr) {
             if (err) {
                 reject(err)
             } else {
-                resolve(rows)
+                resolve(rows[0])
             }
         })
     })
 }
 
-function query(db, table, identifierAttr) {
+function query(db, table, identifierAttr, limit) {
     return new Promise((resolve, reject) => {
         const attrName = Object.keys(identifierAttr)[0]
         const attrValue = identifierAttr[attrName]
 
-        const sql = `SELECT * FROM ${table} WHERE ${attrName} LIKE '%${attrValue}%'`
+        const sql = `SELECT * FROM ${table} WHERE ${attrName} LIKE '%${attrValue}%' LIMIT ${limit}`
+        console.log(sql)
         db.all(sql, (err, rows) => {
             if (err) {
                 reject(err)
@@ -53,8 +54,6 @@ function insert(db, table, data) {
         const values = keys.map(key => data[key]);
 
         const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders.join(', ')})`
-
-        console.log(sql)
 
         const stmt = db.prepare(sql);
         stmt.run(...values, (err) => {
@@ -88,4 +87,18 @@ function write(db, table, data, identifierAttr) {
     })
 }
 
-module.exports = {open, close, get, query, insert, write}
+function getDataTypes(db, table) {
+    return new Promise((resolve, reject) => {
+        const sql = `PRAGMA table_info(${table})`
+        db.all(sql, (err, rows) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(rows)
+            }
+        })
+    })
+}
+
+
+module.exports = {open, close, get, getDataTypes, query, insert, write}
