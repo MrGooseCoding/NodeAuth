@@ -1,5 +1,5 @@
 {
-  "name": "andromedabackend",
+  "name": "nodeauth",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MrGooseCoding/AndromedaBackend.git"
+    "url": "git+https://github.com/MrGooseCoding/NodeAuth.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MrGooseCoding/AndromedaBackend/issues"
+    "url": "https://github.com/MrGooseCoding/NodeAuth/issues"
   },
-  "homepage": "https://github.com/MrGooseCoding/AndromedaBackend#readme",
+  "homepage": "https://github.com/MrGooseCoding/NodeAuth#readme",
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
