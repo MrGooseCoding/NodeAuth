@@ -151,6 +151,10 @@ class Validator {
         this.data.id = uuidv4()
     }
 
+    generate_token() {
+        this.data.token = uuidv4()
+    }
+
     generate_current_date(attrName) {
         this.data[attrName] = new Date().toISOString().slice(0, 19).replace('T', ' ');
     }

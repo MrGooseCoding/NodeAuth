@@ -69,9 +69,13 @@ class userValidator extends Validator {
         )
     }
 
-    async validate_all() {
-        await this.format_data()
+    token_valid () {
+        return (
+            this.__user_readonly("token")
+        )
+    }
 
+    async validate_all() {
         const id_valid = this.id_valid()
         const email_valid = await this.email_valid()
         const username_valid = await this.username_valid()
@@ -80,6 +84,7 @@ class userValidator extends Validator {
         const description_valid = this.description_valid()
         const status_valid = this.status_valid()
         const date_created_valid = this.date_created_valid()
+        const token_valid = this.token_valid()
 
         this.data_valid = 
             id_valid &&
@@ -89,7 +94,8 @@ class userValidator extends Validator {
             display_name_valid && 
             description_valid &&
             status_valid &&
-            date_created_valid
+            date_created_valid,
+            token_valid
     }
 
     async format_data () {

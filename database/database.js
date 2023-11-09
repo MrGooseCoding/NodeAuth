@@ -14,12 +14,14 @@ function close(db) {
     });
 }
 
+const format = (value) => `${(typeof value === "string")?`"${value}"`:value}`
+
 function get(db, table, identifierAttr) {
     return new Promise((resolve, reject) => {
         const attrName = Object.keys(identifierAttr)[0]
         const attrValue = identifierAttr[attrName]
 
-        const sql = `SELECT * FROM ${table} WHERE ${attrName} = ${(typeof attrValue === "string")?`"${attrValue}"`:attrValue}`
+        const sql = `SELECT * FROM ${table} WHERE ${attrName} = ${format(attrValue)}`
         db.all(sql, (err, rows) => {
             if (err) {
                 reject(err)
@@ -36,7 +38,6 @@ function query(db, table, identifierAttr, limit) {
         const attrValue = identifierAttr[attrName]
 
         const sql = `SELECT * FROM ${table} WHERE ${attrName} LIKE '%${attrValue}%' LIMIT ${limit}`
-        console.log(sql)
         db.all(sql, (err, rows) => {
             if (err) {
                 reject(err)
@@ -75,13 +76,13 @@ function write(db, table, data, identifierAttr) {
         const setClause = keys.map(key => `${key} = ?`).join(', ');
         const values = [...keys.map(key => data[key])];
     
-        const sql = `UPDATE ${table} SET ${setClause} WHERE ${attrName} = ${attrValue}`;
+        const sql = `UPDATE ${table} SET ${setClause} WHERE ${attrName} = ${format(attrValue)}`;
         
         db.run(sql, values, (err) => {
           if (err) {
             reject(err)
           } else {
-            resolve()
+            resolve(data)
           }
         });
     })
