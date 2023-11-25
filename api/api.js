@@ -1,6 +1,6 @@
 const User = require('./../models/user')
 
-function api (url, fun, router, model) {
+function api (url, fun, router, model, tokenRequired = false) {
     router.post(url, (req, res) => {
         const v = new model.validator(req.body)
     
@@ -9,7 +9,14 @@ function api (url, fun, router, model) {
             
             if (v.not_null("token")) {
                 const data = await User.objects_getBy("token", v.data.token)
-                user.setData(data[1])
+                
+                if (data[0]) {
+                    user.setData(data[1])
+                    
+                } else if (tokenRequired) {
+                    res.status(400).json(data[1])
+                    return
+                }
             }
             fun(req, res, v, user)
         })

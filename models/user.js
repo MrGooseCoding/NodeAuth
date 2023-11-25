@@ -1,11 +1,12 @@
 const Model = require('./model')
 const userValidator = require('./../validators/userValidator')
+const bcrypt = require('bcrypt');
 
 class User extends Model{
     static name = "User"
     static validator = userValidator
 
-    constructor (data = null) {
+    constructor (data = {}) {
         super('users', data)
     }
 
@@ -27,6 +28,13 @@ class User extends Model{
             }
             return data
         })
+    }
+
+    static async authenticate (username, password) {
+        const userData = await this.__objects_getBy("username", username)
+        const match = await bcrypt.compare(password, userData[1].password);
+        delete userData.password
+        return [match, userData[1]]
     }
 
     change (attrName, attrValue, removePassword=true) {

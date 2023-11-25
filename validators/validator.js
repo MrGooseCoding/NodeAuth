@@ -68,7 +68,6 @@ class Validator {
             return [true, readable_data]
 
         } catch (e) {
-            console.log(e)
             return [false, {error:'Invalid request'}]
         }
     }

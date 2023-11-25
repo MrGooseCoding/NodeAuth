@@ -9,7 +9,6 @@ api('/search/', (req, res, validator, user) => {
     }
     
     user.objects_filterBy("username", validator.data.username, 10).then((data) => {
-        console.log("Final", data)
         res.json(data)
     })
 }, router, User)
@@ -39,10 +38,6 @@ api('/getById/', (req, res, validator, user) => {
 }, router, User)
 
 api('/update/:attrName/', (req, res, validator, user) => {
-    if (!validator.not_null("token")) {
-        return res.status(400).json(validator.errors)
-    }
-
     const options = [
         "email",
         "username",
@@ -68,6 +63,33 @@ api('/update/:attrName/', (req, res, validator, user) => {
             res.json(user.data)
         })
     })
+}, router, User, true)
+
+api('/login/', (req, res, validator, user) => {
+    if (!validator.not_null("username")) {
+        return res.status(400).json(validator.errors)
+    }
+    validator.unique("username").then((unique) => {
+        if (unique) {
+            return res.status(400).json({"username": "username does belong to any user"})
+        }
+
+        delete validator.errors["username"]
+        validator.password_valid().then((valid) => {
+            if (!valid) {
+                const errors = {}
+                errors["password"] = validator.errors.password
+                return res.status(400).json(validator.errors)
+            }
+
+            User.authenticate(validator.data.username, req.body.password).then((r) => {
+                return res.status(r[0] ? 201: 400).json(r[0] ? r[1] : {"password": "incorrect password"})
+                
+            })
+
+        })
+    })
+    
 }, router, User)
 
 module.exports = router
