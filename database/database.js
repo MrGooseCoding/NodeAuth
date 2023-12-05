@@ -1,6 +1,5 @@
 const sqlite3 = require('sqlite3').verbose()
-
-const dbPath = './database.db'
+const { dbPath } = require('./../config')
 
 function open() {
     return new sqlite3.Database(dbPath);
