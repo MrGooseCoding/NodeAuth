@@ -5,9 +5,10 @@ const bcrypt = require('bcrypt');
 class User extends Model{
     static name = "User"
     static validator = userValidator
+    static table = "users"
 
     constructor (data = {}) {
-        super('users', data)
+        super(data)
     }
 
     static objects_getBy (attrName, attrValue, removePassword=true) {

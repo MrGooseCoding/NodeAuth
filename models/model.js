@@ -1,8 +1,7 @@
 const database = require('./../database/database')
 
 class Model {
-    constructor (table, data) {
-        this.table = table
+    constructor (data) {
         this.data = data
     }
 

@@ -136,6 +136,16 @@ class Validator {
         });
     }
 
+    no_whitespace (attrName) {
+        const regex = /^\S+$/
+        const valid = regex.test(this.data[attrName])
+
+        if (!valid) {
+            this.errors[attrName] = `${attrName} can not have whitespaces`
+        }
+        return valid
+    }
+
     __user_readonly (attrName) {
         this.data[attrName] = this.data_types[attrName] === "string" ? "" : null
         return true

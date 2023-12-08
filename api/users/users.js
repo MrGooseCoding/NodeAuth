@@ -1,14 +1,14 @@
 const express = require('express')
 const router = express.Router()
-const User = require('./../models/user')
-const api = require('./api')
+const User = require('../../models/user')
+const api = require('../api')
 
 api('/search/', (req, res, validator, user) => {
     if (!validator.not_null("username")) {
         return res.status(400).json(validator.errors)
     }
     
-    user.objects_filterBy("username", validator.data.username, 10).then((data) => {
+    User.objects_filterBy("username", validator.data.username, 10).then((data) => {
         res.json(data)
     })
 }, router, User)
@@ -25,7 +25,7 @@ api('/create/', (req, res, validator, user) => {
 
 api('/getByToken/', (req, res, validator, user) => {
     res.status(user.data ? 201 : 400).json(user.data ? user.data : validator.errors)
-}, router, User)
+}, router, User, true)
 
 api('/getById/', (req, res, validator, user) => {
     if (!validator.not_null("id")) {
@@ -39,7 +39,7 @@ api('/getById/', (req, res, validator, user) => {
 
 api('/update/:attrName/', (req, res, validator, user) => {
     const options = [
-        "email",
+        //"email",
         "username",
         "display_name",
         "description",

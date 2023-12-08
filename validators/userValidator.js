@@ -38,7 +38,8 @@ class userValidator extends Validator {
         return (
             this.not_null("password") &&
             this.min_length("password", 8) &&
-            this.max_length("password", 40) &&
+            this.max_length("password", 15) &&
+            this.no_whitespace("password") &&
             await this.encripted("password") &&
             this.__user_writeonly("password")
         )

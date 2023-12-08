@@ -7,16 +7,19 @@ function api (url, fun, router, model, tokenRequired = false) {
         v.format_data().then(async () => {
             const user = new User()
             
-            if (v.not_null("token")) {
+            if (tokenRequired) {
+                if (!v.not_null("token")) {
+                    res.status(400).json(v.errors)
+                    return
+                }
+
                 const data = await User.objects_getBy("token", v.data.token)
-                
-                if (data[0]) {
-                    user.setData(data[1])
-                    
-                } else if (tokenRequired) {
+                if (!data[0]) {
                     res.status(400).json(data[1])
                     return
                 }
+
+                user.setData(data[1])
             }
             fun(req, res, v, user)
         })
