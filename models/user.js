@@ -11,13 +11,12 @@ class User extends Model{
         super(data)
     }
 
-    static objects_getBy (attrName, attrValue, removePassword=true) {
-        return this.__objects_getBy(attrName, attrValue).then((data)=> {
-            if (removePassword  || data[0]) {
-                delete data[1]["password"] // It is write-only
-            }
-            return data
-        })
+    static async objects_getBy (attrName, attrValue, removePassword=true) {
+        const data = await this.__objects_getBy(attrName, attrValue);
+        if (removePassword || data[0]) {
+            delete data[1]["password"]; // It is write-only
+        }
+        return data;
     }
 
     static objects_filterBy (attrName, attrValue, limit, removePassword=true) {
@@ -38,13 +37,12 @@ class User extends Model{
         return [match, userData[1]]
     }
 
-    change (attrName, attrValue, removePassword=true) {
-        return this.__change(attrName, attrValue).then((data) => {
-            if (removePassword) {
-                delete data["password"] // It is write-only
-            }
-            return data
-        })
+    async change (attrName, attrValue, removePassword=true) {
+        const data = await this.__change(attrName, attrValue);
+        if (removePassword) {
+            delete data["password"]; // It is write-only
+        }
+        return data;
     }
 }
 

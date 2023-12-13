@@ -5,17 +5,15 @@ class Model {
         this.data = data
     }
 
-    static __objects_getBy(attrName, attrValue) {
+    static async __objects_getBy(attrName, attrValue) {
         const db = database.open()
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
-        return database.get(db, 'users', identifierAttr)
-            .then(data => {
-                if (!data) {
-                    return [false, {error: `${this.name} does not exist`}]
-                }
-                return [true, data]
-            })
+        const data = await database.get(db, 'users', identifierAttr)
+        if (!data) {
+            return [false, { error: `${this.name} does not exist` }]
+        }
+        return [true, data]
     }
 
     static __objects_filterBy(attrName, attrValue, limit) {
@@ -26,15 +24,17 @@ class Model {
         return database.query(db, this.table, identifierAttr, limit)
     }
 
-    __change (attrName, attrValue) {
+    async __change (attrName, attrValue) {
         const db = database.open()
         this.data[attrName] = attrValue
 
         const identifierAttr = {}
         identifierAttr["id"] = this.data.id
 
-        return database.write(db, this.table, this.data, identifierAttr)
+        const data = await database.write(db, this.table, this.data, identifierAttr)
+        return data
     }
+    
     setData (data) {
         this.data = data
     }
