@@ -72,21 +72,20 @@ class Validator {
         }
     }
 
-    unique (attrName) {
+    async unique (attrName) {
         const attrValue = this.data[attrName]
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
 
-        return database.get(
-            this.db, this.table, 
+        const data = await database.get(
+            this.db, this.table,
             identifierAttr
-        ).then(data => {
-            const valid = !data
-            if (!valid) {
-                this.errors[attrName] = `${attrName} has to be unique`
-            }
-            return valid
-        })
+        );
+        if (data[0]) {
+            this.errors[attrName] = `${attrName} has to be unique`;
+        }
+        
+        return !data[0];
     }
 
     not_null (attrName) {

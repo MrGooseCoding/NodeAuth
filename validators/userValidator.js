@@ -21,7 +21,7 @@ class userValidator extends Validator {
             this.not_null("email") &&
             this.max_length("email", 254) &&
             this.follows_regex("email", email_regex) && 
-            this.unique("email")
+            await this.unique("email")
         )
     }
 

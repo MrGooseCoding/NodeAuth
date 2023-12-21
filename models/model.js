@@ -10,18 +10,18 @@ class Model {
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
         const data = await database.get(db, 'users', identifierAttr)
-        if (!data) {
+        if (!data[0]) {
             return [false, { error: `${this.name} does not exist` }]
         }
-        return [true, data]
+        return [true, data[0]]
     }
 
-    static __objects_filterBy(attrName, attrValue, limit) {
+    static async __objects_searchBy(attrName, attrValue, limit) {
         const db = database.open()
 
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
-        return database.query(db, this.table, identifierAttr, limit)
+        return database.search(db, this.table, identifierAttr, limit)
     }
 
     async __change (attrName, attrValue) {
@@ -31,10 +31,10 @@ class Model {
         const identifierAttr = {}
         identifierAttr["id"] = this.data.id
 
-        const data = await database.write(db, this.table, this.data, identifierAttr)
-        return data
+        database.write(db, this.table, this.data, identifierAttr)
+        return
     }
-    
+
     setData (data) {
         this.data = data
     }

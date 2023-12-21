@@ -19,15 +19,16 @@ class User extends Model{
         return data;
     }
 
-    static objects_filterBy (attrName, attrValue, limit, removePassword=true) {
-        return this.__objects_filterBy(attrName, attrValue, limit).then((data) => {
-            if (removePassword) {
-                data.map((v) => {
-                    delete v["password"]
-                })
-            }
-            return data
-        })
+    static async objects_searchBy (attrName, attrValue, limit, removePassword=true) {
+        const data = await this.__objects_searchBy(attrName, attrValue, limit)
+        
+        if (removePassword) {
+            data.map((v) => {
+                delete v["password"]
+            })
+        }
+
+        return data
     }
 
     static async authenticate (username, password) {
@@ -38,11 +39,13 @@ class User extends Model{
     }
 
     async change (attrName, attrValue, removePassword=true) {
-        const data = await this.__change(attrName, attrValue);
+        await this.__change(attrName, attrValue);
+        
+        var data = this.data
         if (removePassword) {
             delete data["password"]; // It is write-only
         }
-        return data;
+        return data
     }
 }
 

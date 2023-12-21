@@ -22,7 +22,7 @@ function close(db) {
     });
 }
 
-async function get(db, table, identifierAttr) {
+function get(db, table, identifierAttr) {
     const whereClause = getWhereClause(identifierAttr)
 
     const query = `SELECT * FROM ${table} ${whereClause ? 'WHERE ' + whereClause : ''}`

@@ -1,43 +1,41 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../../models/user')
-const api = require('../api')
+const User = require('../models/user')
+const api = require('./api')
 
-api('/search/', (req, res, validator, user) => {
+api('/search/', async (req, res, validator, user) => {
     if (!validator.not_null("username")) {
         return res.status(400).json(validator.errors)
     }
     
-    User.objects_filterBy("username", validator.data.username, 10).then((data) => {
-        res.json(data)
-    })
-}, router, User)
+    const data = await User.objects_searchBy("username", validator.data.username, 10)
+    return res.status(200).json(data)
 
-api('/create/', (req, res, validator, user) => {
-    validator.validate_all().then(() => {
-        validator.generate_current_date("date_created")
-        validator.generate_token()
-        return validator.create()
-    }).then((data) => {
-        res.status(data[0] ? 201 : 400).json(data[1])
-    })  
 }, router, User)
 
 api('/getByToken/', (req, res, validator, user) => {
-    res.status(user.data ? 201 : 400).json(user.data ? user.data : validator.errors)
+    res.status(user.data ? 200 : 400).json(user.data ? user.data : validator.errors)
 }, router, User, true)
 
-api('/getById/', (req, res, validator, user) => {
+api('/getById/', async (req, res, validator, user) => {
     if (!validator.not_null("id")) {
         return res.status(400).json(validator.errors)
     }
     
-    User.objects_getBy("id", validator.data.id).then((data) => {
-        res.status(data[0] ? 201 : 400).json(data[1])
-    })
+    const data = await User.objects_getBy("id", validator.data.id)
+    return res.status(data[0] ? 200 : 400).json(data[1])
 }, router, User)
 
-api('/update/:attrName/', (req, res, validator, user) => {
+api('/create/', async (req, res, validator, user) => {
+    await validator.validate_all()
+    validator.generate_current_date("date_created")
+    validator.generate_token()
+
+    const data = await validator.create()
+    return res.status(data[0] ? 201 : 400).json(data[1])
+}, router, User)
+
+api('/update/:attrName/', async (req, res, validator, user) => {
     const options = [
         //"email",
         "username",
@@ -52,24 +50,23 @@ api('/update/:attrName/', (req, res, validator, user) => {
         return res.status(400).json({error: "Invalid attribute name"})
     }
 
-    validator.validate_all().then(() => {
-        if (validator.errors[attrName]) {
-            const error = {}
-            error[attrName] = validator.errors[attrName]
-            return res.json(error)
-        }
+    await validator.validate_all()
+    if (validator.errors[attrName]) {
+        const error = {}
+        error[attrName] = validator.errors[attrName]
+        return res.json(error)
+    }
 
-        user.change(attrName, validator.data[attrName]).then(() => {
-            res.json(user.data)
-        })
-    })
+    await user.change(attrName, validator.data[attrName])
+    return res.status(201).json(user.data)
+
 }, router, User, true)
 
-api('/login/', (req, res, validator, user) => {
+api('/login/', async (req, res, validator, user) => {
     if (!validator.not_null("username")) {
         return res.status(400).json(validator.errors)
     }
-    validator.unique("username").then((unique) => {
+    const is_unique = validator.unique("username").then((unique) => {
         if (unique) {
             return res.status(400).json({"username": "username does belong to any user"})
         }
