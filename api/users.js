@@ -57,6 +57,7 @@ api('/update/:attrName/', async (req, res, validator, user) => {
         return res.json(error)
     }
 
+
     await user.change(attrName, validator.data[attrName])
     return res.status(201).json(user.data)
 
@@ -66,26 +67,23 @@ api('/login/', async (req, res, validator, user) => {
     if (!validator.not_null("username")) {
         return res.status(400).json(validator.errors)
     }
-    const is_unique = validator.unique("username").then((unique) => {
-        if (unique) {
-            return res.status(400).json({"username": "username does belong to any user"})
-        }
+    const is_unique = await validator.unique("username")
 
-        delete validator.errors["username"]
-        validator.password_valid().then((valid) => {
-            if (!valid) {
-                const errors = {}
-                errors["password"] = validator.errors.password
-                return res.status(400).json(validator.errors)
-            }
+    if (is_unique) {
+        return res.status(400).json({"username": "username does belong to any user"})
+    }
 
-            User.authenticate(validator.data.username, req.body.password).then((r) => {
-                return res.status(r[0] ? 201: 400).json(r[0] ? r[1] : {"password": "incorrect password"})
-                
-            })
+    delete validator.errors["username"]
+    const password_valid = await validator.password_valid()
+    if (!password_valid) {
+        const errors = {}
+        errors["password"] = validator.errors.password
+        return res.status(400).json(validator.errors)
+    }
 
-        })
-    })
+    result = await User.authenticate(validator.data.username, req.body.password)
+    return res.status(r[0] ? 201: 400).json(result[0] ? result[1] : {"password": "incorrect password"})
+
     
 }, router, User)
 
