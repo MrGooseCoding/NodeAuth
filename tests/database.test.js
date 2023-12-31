@@ -25,13 +25,12 @@ describe('Database', () => {
     })
 
     it('should get data from database', async () => {
-        const data = await database.get(db, 'users', {username: dummyData.username})
-        console.log(data)
+        const data = await database.get(db, table, {username: dummyData.username})
         expect(data[0].id).to.equal(dummyData.id)
     })
     
     it('should return a valid array of rows', async () => {
-        const data = await database.search(db, 'users', {username: "user"}, 10)
+        const data = await database.search(db, table, {username: "user"}, 10)
     
         for (let i in data) {
             expect(data[i].username).to.contain("user")
@@ -46,13 +45,13 @@ describe('Database', () => {
             display_name: 'Dummy User 2',
             description: 'This is my dummy description',
             password: '$2b$10$340jwSkt4rU2OSGkx5dQuu0j.AMJfoxeXDPUG6KKAfeUECxYKa4MK',
-            status: null,
+            status: 0,
             date_created: '2023-12-16 19:12:19',
             token: 'f85cb688-701d-4c64-9087-42d62c8e0fcd'
         }
         var fail = false;
         try {
-            await database.insert(db, 'users', newData)
+            await database.insert(db, table, newData)
         } catch (e) {
             fail = true
         }
@@ -66,7 +65,7 @@ describe('Database', () => {
         }
         var fail = false;
         try {
-            await database.write(db, 'users', changes, {id:dummyData.id})
+            await database.write(db, table, changes, {id:dummyData.id})
         } catch (e) {
             fail = true
         }
