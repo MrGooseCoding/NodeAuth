@@ -37,7 +37,7 @@ class Validator {
             if (this.data_types[key] === 'string') {
                 formated_data[key] = value ? String(value).trim() : ""
             } else {
-                formated_data[key] = value ? Number(value) : null
+                formated_data[key] = value ? Number(value) : 0
             }
         }
 
@@ -146,7 +146,7 @@ class Validator {
     }
 
     __user_readonly (attrName) {
-        this.data[attrName] = this.data_types[attrName] === "string" ? "" : null
+        this.data[attrName] = this.data_types[attrName] === "string" ? "" : 0
         return true
     }
 

@@ -110,7 +110,7 @@ class userValidator extends Validator {
             this.data["email"] = this.data["email"].toLowerCase()
         }
     }
-    
+
 }
 
 module.exports = userValidator
