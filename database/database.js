@@ -29,8 +29,8 @@ function get(db, table, identifierAttr) {
     
     return new Promise(function(resolve,reject){
         db.all(query, (err,rows) => {
-           if(err) {return reject(err);}
-           resolve(rows);
+            if(err) {return reject(err);}
+            resolve(rows);
         });
     });
 }
@@ -54,20 +54,31 @@ function insert(db, table, data) {
     const placeholders = keys.map(() => '?');
     const values = keys.map(key => data[key]);
 
-    const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders.join(', ')})`
+    const query = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders.join(', ')})`
     return new Promise((resolve, reject) => {
-        db.run(sql, ...values, (err) => {
+        db.run(query, ...values, (err) => {
             if (err) {reject(err)}
             resolve()
         })
     })
 }
 
-async function write(db, table, data, identifierAttr) {
+function write(db, table, data, identifierAttr) {
     const whereClause = getWhereClause(identifierAttr)
     const setClause = getSetClause(data)
 
     const query = `UPDATE ${table} SET ${setClause} WHERE ${whereClause}`;
+    return new Promise((resolve, reject) => {
+        db.run(query, (err) => {
+            if (err) {reject(err)}
+            resolve()
+        })
+    })
+}
+
+function deleteAll(db, table) {
+    const query = `DELETE FROM ${table}`
+
     return new Promise((resolve, reject) => {
         db.run(query, (err) => {
             if (err) {reject(err)}
@@ -88,4 +99,4 @@ function getDataTypes(db, table) {
 }
 
 
-module.exports = {open, close, get, getDataTypes, search, insert, write}
+module.exports = {open, close, get, getDataTypes, search, insert, write, deleteAll}
