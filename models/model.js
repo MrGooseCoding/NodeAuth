@@ -21,18 +21,19 @@ class Model {
 
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
-        return database.search(db, this.table, identifierAttr, limit)
+        return await database.search(db, this.table, identifierAttr, limit)
     }
 
-    async __change (attrName, attrValue) {
+    async __change (table, attrName, attrValue) {
         const db = database.open()
+
         this.data[attrName] = attrValue
 
         const identifierAttr = {}
         identifierAttr["id"] = this.data.id
 
-        database.write(db, this.table, this.data, identifierAttr)
-        return
+        database.write(db, table, this.data, identifierAttr)
+        return this.data
     }
 
     setData (data) {

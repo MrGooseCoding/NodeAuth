@@ -13,7 +13,7 @@ class User extends Model{
 
     static async objects_getBy (attrName, attrValue, removePassword=true) {
         const data = await this.__objects_getBy(attrName, attrValue);
-        if (removePassword || data[0]) {
+        if (removePassword && data[0]) {
             delete data[1]["password"]; // It is write-only
         }
         return data;
@@ -32,16 +32,15 @@ class User extends Model{
     }
 
     static async authenticate (username, password) {
-        const userData = await this.__objects_getBy("username", username)
+        const userData = await this.objects_getBy("username", username, false)
         const match = await bcrypt.compare(password, userData[1].password);
-        delete userData.password
+        delete userData[1].password
         return [match, userData[1]]
     }
 
     async change (attrName, attrValue, removePassword=true) {
-        await this.__change(attrName, attrValue);
+        var data = await this.__change(User.table, attrName, attrValue)
         
-        var data = this.data
         if (removePassword) {
             delete data["password"]; // It is write-only
         }
