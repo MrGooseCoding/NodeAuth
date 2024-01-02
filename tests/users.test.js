@@ -15,7 +15,7 @@ const dummyUser = {
     username: 'dummy.user',
     display_name: 'Dummy User',
     description: 'This is my dummy description',
-    password: "$2b$10$jdcZvrstrll2CThEV5HCEOH3CYf/1y5pl5NMOLQaAJSvgNCxJKpDe",
+    password: "$2b$10$jdcZvrstrll2CThEV5HCEOH3CYf/1y5pl5NMOLQaAJSvgNCxJKpDe", // hash for password
     status: 0,
     date_created: '2023-11-16 19:12:19',
     token: 'f7131fcc-a979-4df1-8164-ffd0fb68a557'
@@ -37,7 +37,7 @@ describe('User API', () => {
             "username": dummyUser.username,
         }
         const res = await post('/api/users/search/', data)
-        
+
         expect(res.status).to.equal(200);
         expect(res.body).be.instanceOf(Array)
         expect(res.body[0].id).to.be.a("string")
@@ -60,6 +60,20 @@ describe('User API', () => {
         }
 
         const res = await post('/api/users/getByToken/', data)
+
+        expect(res.status).to.equal(200);
+        expect(res.body.username).to.equal(dummyUser.username)
+    })
+
+    it('should authenticate a user and return a token (login)', async () => {
+        const data = {
+            "username": dummyUser.username,
+            "password": "newpassword" 
+        }
+
+        const res = await post('/api/users/login/', data)
+
+        console.log(res.body)
 
         expect(res.status).to.equal(200);
         expect(res.body.username).to.equal(dummyUser.username)

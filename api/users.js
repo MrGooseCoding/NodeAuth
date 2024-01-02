@@ -76,13 +76,12 @@ api('/login/', async (req, res, validator, user) => {
     delete validator.errors["username"]
     const password_valid = await validator.password_valid()
     if (!password_valid) {
-        const errors = {}
-        errors["password"] = validator.errors.password
+        console.log(password_valid)
         return res.status(400).json(validator.errors)
     }
 
-    result = await User.authenticate(validator.data.username, req.body.password)
-    return res.status(r[0] ? 201: 400).json(result[0] ? result[1] : {"password": "incorrect password"})
+    const result = await User.authenticate(validator.data.username, req.body.password)
+    return res.status(result[0] ? 200: 400).json(result[0] ? result[1] : {"password": "incorrect password"})
 
     
 }, router, User)
