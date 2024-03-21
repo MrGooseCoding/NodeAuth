@@ -1,4 +1,7 @@
 const Validator = require('./validator')
+const util = require('util')
+const config = require('./../config.js')
+const send_email = require('../utils/send_email');
 
 const username_regex = /^(?![_.])[0-9a-zA-Z._+]+(?<![_.])$/
 const email_regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
@@ -95,7 +98,7 @@ class userValidator extends Validator {
             display_name_valid && 
             description_valid &&
             status_valid &&
-            date_created_valid,
+            date_created_valid &&
             token_valid
     }
 
@@ -109,6 +112,21 @@ class userValidator extends Validator {
         if ( this.data["email"] ) {
             this.data["email"] = this.data["email"].toLowerCase()
         }
+    }
+
+    async __send_email() {
+        let opts = {}
+        opts.subject = util.format(config.validation_email.subject, config.appName)
+        opts.text = util.format(config.validation_email.text, 
+            this.data.display_name,
+            ''
+            )
+        opts.to = this.data.email
+        await send_email(opts)
+    }
+
+    async create () {
+        return await this.__create()
     }
 
 }

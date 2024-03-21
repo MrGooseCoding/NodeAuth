@@ -76,7 +76,6 @@ api('/login/', async (req, res, validator, user) => {
     delete validator.errors["username"]
     const password_valid = await validator.password_valid()
     if (!password_valid) {
-        console.log(password_valid)
         return res.status(400).json(validator.errors)
     }
 

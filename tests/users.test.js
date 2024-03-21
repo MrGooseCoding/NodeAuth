@@ -73,8 +73,6 @@ describe('User API', () => {
 
         const res = await post('/api/users/login/', data)
 
-        console.log(res.body)
-
         expect(res.status).to.equal(200);
         expect(res.body.username).to.equal(dummyUser.username)
     })

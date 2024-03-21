@@ -1,6 +1,7 @@
-const database = require('../database/database')
 const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
+
+const database = require('../database/database');
 
 const encript_SaltRounds = 10
 
@@ -44,7 +45,7 @@ class Validator {
         this.data = formated_data
     }
 
-    async create() {
+    async __create() {
         if (!this.data_valid) {
             return [false, this.errors]
         }
