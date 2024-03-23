@@ -5,6 +5,11 @@ class Model {
         this.data = data
     }
 
+    static async get_data_types() {
+        const db = database.open()
+        return await database.getDataTypes(db, this.table)
+    }
+
     static async __objects_getBy(attrName, attrValue) {
         const db = database.open()
         const identifierAttr = {}

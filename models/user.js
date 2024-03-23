@@ -1,15 +1,26 @@
 const Model = require('./model')
-const userValidator = require('./../validators/userValidator')
 const bcrypt = require('bcrypt');
+const { generate_uuid, generate_current_date } = require('./../utils/generators');
+const database = require('../database/database')
 
 class User extends Model{
     static name = "User"
-    static validator = userValidator
     static table = "users"
 
     constructor (data = {}) { // Note that this method does not insert anything in the database
         "initializes a User class, without inserting anything in the database"
         super(data)
+    }
+
+    static async create(data) { 
+        data.id = generate_uuid()
+        data.token = generate_uuid()
+        data.date_created = generate_current_date()
+        
+        const db = database.open()
+
+        await database.insert(db, this.table, data).then(data => data)
+        return new User(data)
     }
 
     static async objects_getBy (attrName, attrValue) {

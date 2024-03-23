@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../models/user')
+const User = require('./../models/user')
+const userValidator = require('./../validators/userValidator')
 const api = require('./api')
 
 api('/search/', async (req, res, validator, user) => {
@@ -11,11 +12,11 @@ api('/search/', async (req, res, validator, user) => {
     const users = await User.objects_searchBy("username", validator.data.username, 10)
     return res.status(200).json(users.map(u => u.json()))
 
-}, router, User)
+}, router, userValidator)
 
 api('/getByToken/', (req, res, validator, user) => {
     res.status(user.json() ? 200 : 400).json(user.json() ? user.json() : validator.errors)
-}, router, User, true)
+}, router, userValidator, true)
 
 api('/getById/', async (req, res, validator, user) => {
     if (!validator.not_null("id")) {
@@ -24,16 +25,14 @@ api('/getById/', async (req, res, validator, user) => {
     
     const data = await User.objects_getBy("id", validator.data.id)
     return res.status(!data["error"] ? 200 : 400).json(data.json())
-}, router, User)
+}, router, userValidator)
 
 api('/create/', async (req, res, validator, user) => {
     await validator.validate_all()
-    validator.generate_current_date("date_created")
-    validator.generate_token()
 
     const data = await validator.create()
     return res.status(data[0] ? 201 : 400).json(data[1])
-}, router, User)
+}, router, userValidator)
 
 api('/update/:attrName/', async (req, res, validator, user) => {
     const options = [
@@ -61,7 +60,7 @@ api('/update/:attrName/', async (req, res, validator, user) => {
     await user.change(attrName, validator.data[attrName])
     return res.status(201).json(user.data)
 
-}, router, User, true)
+}, router, userValidator, true)
 
 api('/login/', async (req, res, validator, user) => {
     if (!validator.not_null("username")) {
@@ -74,15 +73,11 @@ api('/login/', async (req, res, validator, user) => {
     }
 
     delete validator.errors["username"]
-    const password_valid = await validator.password_valid()
-    if (!password_valid) {
-        return res.status(400).json(validator.errors)
-    }
 
     const result = await User.authenticate(validator.data.username, req.body.password)
     return res.status(result[0] ? 200: 400).json(result[0] ? result[1].json() : {"password": "incorrect password"})
 
     
-}, router, User)
+}, router, userValidator)
 
 module.exports = router

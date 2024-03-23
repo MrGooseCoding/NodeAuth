@@ -1,12 +1,11 @@
 const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid')
 
 const database = require('../database/database');
-
-const encript_SaltRounds = 10
+const { generate_hash } = require('../utils/generators');
 
 class Validator {
-    constructor(table, data) {
+    constructor(model, table, data) {
+        this.model = model
         this.table = table
         this.data = data
         this.errors = {}
@@ -22,7 +21,8 @@ class Validator {
             'INTEGER': 'int',
             'DATETIME': 'string'
         }
-        const raw_data_types = await database.getDataTypes(this.db, this.table)
+
+        const raw_data_types = await this.model.get_data_types()
         raw_data_types.forEach(element => {
             this.data_types[element.name] = data_types_transform[element.type]
         });
@@ -51,10 +51,7 @@ class Validator {
         }
         try {
 
-            this.generate_id()
-            const db = database.open()
-    
-            await database.insert(db, this.table, this.data).then(data => data)
+            this.model.create(this.data)
             
             const readable_data = {}
             
@@ -64,7 +61,6 @@ class Validator {
                 }
             }
 
-            db.close()
     
             return [true, readable_data]
 
@@ -127,13 +123,9 @@ class Validator {
         return valid
     }
 
-    encripted (attrName) {
-        return new Promise((resolve, reject) => {
-            bcrypt.hash(this.data[attrName], encript_SaltRounds, (err, hash) => {
-                this.data[attrName] = hash
-                resolve(!err)
-            });
-        });
+    async encripted (attrName) {
+        this.data[attrName] = await generate_hash(this.data[attrName])
+        return true
     }
 
     no_whitespace (attrName) {
@@ -155,19 +147,6 @@ class Validator {
         this.__write_only_attributes.push(attrName)
         return true
     }
-
-    generate_id() {
-        this.data.id = uuidv4()
-    }
-
-    generate_token() {
-        this.data.token = uuidv4()
-    }
-
-    generate_current_date(attrName) {
-        this.data[attrName] = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    }
-
 }
 
 module.exports = Validator

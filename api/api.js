@@ -1,9 +1,8 @@
 const User = require('./../models/user')
 
-function api (url, fun, router, model, tokenRequired = false) {
+function api (url, fun, router, modelValidator, tokenRequired = false) {
     router.post(url, async (req, res) => {
-        const v = new model.validator(req.body)
-    
+        const v = new modelValidator(req.body)
         await v.format_data()
         const user = new User()
         
