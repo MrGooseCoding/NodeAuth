@@ -8,13 +8,13 @@ api('/search/', async (req, res, validator, user) => {
         return res.status(400).json(validator.errors)
     }
     
-    const data = await User.objects_searchBy("username", validator.data.username, 10)
-    return res.status(200).json(data)
+    const users = await User.objects_searchBy("username", validator.data.username, 10)
+    return res.status(200).json(users.map(u => u.json()))
 
 }, router, User)
 
 api('/getByToken/', (req, res, validator, user) => {
-    res.status(user.data ? 200 : 400).json(user.data ? user.data : validator.errors)
+    res.status(user.json() ? 200 : 400).json(user.json() ? user.json() : validator.errors)
 }, router, User, true)
 
 api('/getById/', async (req, res, validator, user) => {
@@ -23,7 +23,7 @@ api('/getById/', async (req, res, validator, user) => {
     }
     
     const data = await User.objects_getBy("id", validator.data.id)
-    return res.status(data[0] ? 200 : 400).json(data[1])
+    return res.status(!data["error"] ? 200 : 400).json(data.json())
 }, router, User)
 
 api('/create/', async (req, res, validator, user) => {
@@ -80,7 +80,7 @@ api('/login/', async (req, res, validator, user) => {
     }
 
     const result = await User.authenticate(validator.data.username, req.body.password)
-    return res.status(result[0] ? 200: 400).json(result[0] ? result[1] : {"password": "incorrect password"})
+    return res.status(result[0] ? 200: 400).json(result[0] ? result[1].json() : {"password": "incorrect password"})
 
     
 }, router, User)

@@ -114,7 +114,7 @@ class userValidator extends Validator {
         }
     }
 
-    async __send_email() {
+    async send_validation_email() {
         let opts = {}
         opts.subject = util.format(config.validation_email.subject, config.appName)
         opts.text = util.format(config.validation_email.text, 

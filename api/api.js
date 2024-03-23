@@ -14,12 +14,13 @@ function api (url, fun, router, model, tokenRequired = false) {
             }
 
             const data = await User.objects_getBy("token", v.data.token)
-            if (!data[0]) {
-                res.status(400).json(data[1])
+            if (data["error"]) {
+                res.status(400).json(data.json())
                 return
             }
 
-            user.setData(data[1])
+            user.setData(data.json())
+
         }
         await fun(req, res, v, user)
     })
