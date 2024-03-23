@@ -1,5 +1,3 @@
-const bcrypt = require('bcrypt');
-
 const database = require('../database/database');
 const { generate_hash } = require('../utils/generators');
 
