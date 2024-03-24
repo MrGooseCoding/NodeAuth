@@ -5,6 +5,13 @@ class Model {
         this.data = data
     }
 
+    static async __create () {
+        const db = database.open()
+
+        await database.insert(db, this.table, data).then(data => data)
+        return new User(data)
+    }
+
     static async get_data_types() {
         const db = database.open()
         return await database.getDataTypes(db, this.table)

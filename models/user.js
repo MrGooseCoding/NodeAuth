@@ -17,10 +17,7 @@ class User extends Model{
         data.token = generate_uuid()
         data.date_created = generate_current_date()
         
-        const db = database.open()
-
-        await database.insert(db, this.table, data).then(data => data)
-        return new User(data)
+        return await this.__create()
     }
 
     static async authenticate (username, password) {
