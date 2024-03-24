@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test_users": "npx mocha ./tests/users.test.js"
+    "test_users": "npx mocha ./tests/users.test.js",
+    "test_database": "npx mocha ./tests/database.test.js"
   },
   "repository": {
     "type": "git",
