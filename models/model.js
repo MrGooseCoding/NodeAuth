@@ -5,7 +5,7 @@ class Model {
         this.data = data
     }
 
-    static async __create () {
+    static async __create (data) {
         const db = database.open()
 
         await database.insert(db, this.table, data).then(data => data)

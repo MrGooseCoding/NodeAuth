@@ -17,7 +17,7 @@ class User extends Model{
         data.token = generate_uuid()
         data.date_created = generate_current_date()
         
-        return await this.__create()
+        return await this.__create(data)
     }
 
     static async authenticate (username, password) {

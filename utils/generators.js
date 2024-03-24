@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const encript_SaltRounds = 10
 
-function generate_random_uuid() {
+function generate_uuid() {
     return uuidv4()
 }
 
@@ -19,4 +19,4 @@ function generate_hash (value) {
     });
 }
 
-module.exports = {generate_random_uuid, generate_current_date, generate_hash}
+module.exports = {generate_uuid, generate_current_date, generate_hash}
