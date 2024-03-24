@@ -1,6 +1,5 @@
 const Model = require('./model')
-const userValidator = require('./../validators/userValidator')
-const bcrypt = require('bcrypt');
+const { generate_validation_code  } = require('./../utils/generators');
 
 class Validation extends Model{
     static name = "Validation"
@@ -10,7 +9,13 @@ class Validation extends Model{
         super(data)
     }
 
-    
+    static async create (type, user) {
+        const data = {}
+        data.type=type
+        data.user=user.json()
+        data.code = generate_validation_code()
+        return this.__create(data)
+    }
 }
 
 module.exports = Validation

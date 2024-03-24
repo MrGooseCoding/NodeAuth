@@ -75,7 +75,7 @@ api('/login/', async (req, res, validator, user) => {
     delete validator.errors["username"]
 
     const result = await User.authenticate(validator.data.username, req.body.password)
-    return res.status(result[0] ? 200: 400).json(result[0] ? result[1].json() : {"password": "incorrect password"})
+    return res.status(!result["error"] ? 200: 400).json(!result["error"] ? result.json() : result["error"])
 
     
 }, router, userValidator)

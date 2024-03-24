@@ -125,7 +125,7 @@ describe('User API', () => {
         const res = await post('/api/users/update/password/', data)
         const result = await User.authenticate(dummyUser.username, data.password)
         expect(res.status).to.equal(201)
-        expect(result[0]).to.equal(true)
+        expect(!result["error"]).to.equal(true)
     })
 
     it('should update username (update/username)', async () => {

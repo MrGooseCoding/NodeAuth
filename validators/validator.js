@@ -2,6 +2,10 @@ const database = require('../database/database');
 const { generate_hash } = require('../utils/generators');
 
 class Validator {
+    /**
+     * Determines if the data given is valid and formats it if necessary 
+    */
+
     constructor(model, table, data) {
         this.model = model
         this.table = table

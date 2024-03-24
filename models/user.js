@@ -16,17 +16,17 @@ class User extends Model{
         data.id = generate_uuid()
         data.token = generate_uuid()
         data.date_created = generate_current_date()
-        
+
         return await this.__create(data)
     }
 
     static async authenticate (username, password) {
-        const user = await this.objects_getBy("username", username)
-        if (user["error"]) {
-            return [false, user]
+        const result = await this.objects_getBy("username", username)
+        if (result["error"]) {
+            return result
         }
-        const match = await bcrypt.compare(password, user.data.password);
-        return match ? [match, user] : [match, {}]
+        const match = await bcrypt.compare(password, result.data.password);
+        return match ? result : {error: "Invalid username or password"}
     }
 
     json (removePassword=true) {
