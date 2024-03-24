@@ -10,26 +10,29 @@ class Model {
         return await database.getDataTypes(db, this.table)
     }
 
-    static async __objects_getBy(attrName, attrValue) {
+    static async objects_getBy(attrName, attrValue) {
         const db = database.open()
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
         const data = await database.get(db, 'users', identifierAttr)
-        if (!data[0]) {
-            return [false, { error: `${this.name} does not exist` }]
-        }
-        return [true, data[0]]
+
+        return data[0] ? new this(data[0]) : { error: `${this.name} does not exist` }
     }
 
-    static async __objects_searchBy(attrName, attrValue, limit) {
+    static async objects_searchBy(attrName, attrValue, limit) {
         const db = database.open()
 
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
-        return await database.search(db, this.table, identifierAttr, limit)
+
+        let data = await database.search(db, this.table, identifierAttr, limit)
+
+        let objects = data.map(d => new this(d))
+
+        return objects
     }
 
-    async __change (table, attrName, attrValue) {
+    async change (attrName, attrValue) {
         const db = database.open()
 
         this.data[attrName] = attrValue
@@ -37,8 +40,16 @@ class Model {
         const identifierAttr = {}
         identifierAttr["id"] = this.data.id
 
-        database.write(db, table, this.data, identifierAttr)
-        return this.data
+        database.write(db, this.table, this.data, identifierAttr)
+        return this
+    }
+
+    json () {
+        let json = this.data
+        if (removePassword) {
+            delete json["password"]
+        }
+        return json
     }
 
     setData (data) {

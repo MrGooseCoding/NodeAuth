@@ -23,21 +23,6 @@ class User extends Model{
         return new User(data)
     }
 
-    static async objects_getBy (attrName, attrValue) {
-        const data = await this.__objects_getBy(attrName, attrValue);
-
-        return data[0] ? new User(data[1]) : data[1]
-    }
-
-    static async objects_searchBy (attrName, attrValue, limit) {
-        const data = await this.__objects_searchBy(attrName, attrValue, limit)
-        
-        let users = []
-        data.map(d => {users.push(new User(d))})
-
-        return users
-    }
-
     static async authenticate (username, password) {
         const user = await this.objects_getBy("username", username)
         if (user["error"]) {
@@ -47,12 +32,6 @@ class User extends Model{
         return match ? [match, user] : [match, {}]
     }
 
-    async change (attrName, attrValue) {
-        var data = await this.__change(User.table, attrName, attrValue)
-
-        return new User(data)
-    }
-
     json (removePassword=true) {
         let json = this.data
         if (removePassword) {
@@ -60,14 +39,6 @@ class User extends Model{
         }
         return json
     }
-    /*if (removePassword && data[0]) {
-            delete data[1]["password"]; // It is write-only
-        }
-        if (removePassword) {
-            data.map((v) => {
-                delete v["password"]
-            })
-        }*/
 }
 
 module.exports = User
