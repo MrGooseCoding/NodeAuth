@@ -29,6 +29,7 @@ api('/getById/', async (req, res, validator, user) => {
 
 api('/create/', async (req, res, validator, user) => {
     await validator.validate_all()
+    console.log("Hey")
 
     const data = await validator.create()
     return res.status(data[0] ? 201 : 400).json(data[1])

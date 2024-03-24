@@ -1,21 +1,34 @@
 const database = require('../database/database');
+const Model = require('../models/model');
 const { generate_hash } = require('../utils/generators');
 
+/** It ensures the integrity and validity of user-provided data before it is processed further in the application. 
+ * It performs a series of checks and transformations on the data to ensure it adheres to the expected format, type, and constraints defined by the application's requirements. 
+ */
 class Validator {
-    /**
-     * Determines if the data given is valid and formats it if necessary 
-    */
+    // errors object to store validation errors.
+    errors = {}
+    // Private field to store attributes that are write-only.
+    _write_only_attributes = []
+    // Flag to indicate if the data is valid.
+    data_valid = false
+
+    /** Constructor initializes the Validator. It also opens a database connection. Has the following parameters:
+     * @param {Model} model - the model data type to be validated
+     * @param {string} table - the string that represents the name of the table in the database
+     * @param {Object} data - the record to be validated
+     */
 
     constructor(model, table, data) {
         this.model = model
         this.table = table
         this.data = data
-        this.errors = {}
-        this.data_valid = false
-        this.__write_only_attributes = []
         this.db = database.open()
     }
 
+    /** Asynchronously retrieves the data types from the database and transforms them into JavaScript types.
+     * This method populates the data_types object with the transformed types
+     */
     async get_data_types() {
         this.data_types = {}
         const data_types_transform = {
@@ -30,7 +43,10 @@ class Validator {
         });
     }
 
-    async __format_data() {
+    /** Formats the user-provided data according to the data types retrieved from the database.
+     * It trims strings and converts non-string values to numbers, ensuring data integrity.
+     */
+    async _format_data() {
         await this.get_data_types()
 
         var formated_data = {}
@@ -47,30 +63,32 @@ class Validator {
         this.data = formated_data
     }
 
-    async __create() {
+    /** Asynchronously creates a new record in the database if the data is valid. 
+     * It filters out write-only attributes before creating the record.
+     */
+    async _create() {
         if (!this.data_valid) {
             return [false, this.errors]
         }
         try {
-
             this.model.create(this.data)
-            
+
             const readable_data = {}
-            
             for (var key in this.data) {
-                if (!this.__write_only_attributes.includes(key) ) {
+                if (!this._write_only_attributes.includes(key) ) {
                     readable_data[key] = this.data[key]
                 }
             }
 
-    
             return [true, readable_data]
-
         } catch (e) {
             return [false, {error:'Invalid request'}]
         }
     }
 
+    /** Checks if a given attribute is unique in the database. 
+     * It returns false if the attribute is not unique, adding an error message to the errors object.
+     */
     async unique (attrName) {
         const attrValue = this.data[attrName]
         const identifierAttr = {}
@@ -83,10 +101,13 @@ class Validator {
         if (data[0]) {
             this.errors[attrName] = `${attrName} has to be unique`;
         }
-        
+
         return !data[0];
     }
 
+    /** Validates that a given attribute is not null. 
+     * It returns false if the attribute is null, adding an error message to the errors object.
+     */
     not_null (attrName) {
         const valid = Boolean(this.data[attrName])
 
@@ -96,6 +117,9 @@ class Validator {
         return valid
     }
 
+    /** Validates that a given attribute does not exceed a specified maximum length.
+     * It returns false if the attribute exceeds the maximum length, adding an error message to the errors object.
+     */
     max_length (attrName, maxLength) {
         const l = this.data[attrName].length
         const valid = l <= maxLength
@@ -106,6 +130,9 @@ class Validator {
         return valid
     }
 
+    /** Validates that a given attribute meets a specified minimum length. 
+     * It returns false if the attribute does not meet the minimum length, adding an error message to the errors object.
+     */
     min_length (attrName, maxLength) {
         const l = this.data[attrName].length
         const valid = l >= maxLength
@@ -116,6 +143,9 @@ class Validator {
         return valid
     }
 
+    /** Validates that a given attribute matches a specified regular expression. 
+     * It returns false if the attribute does not match the regex, adding an error message to the errors object.
+     */
     follows_regex (attrName, regex) {
         const valid = regex.test(this.data[attrName])
 
@@ -125,11 +155,17 @@ class Validator {
         return valid
     }
 
+    /** Encrypts a given attribute using a hashing function.
+     *  It replaces the attribute's value with the hashed value.
+     */
     async encripted (attrName) {
         this.data[attrName] = await generate_hash(this.data[attrName])
         return true
     }
 
+    /** Validates that a given attribute does not contain any whitespace characters. 
+     * It returns false if the attribute contains whitespace, adding an error message to the errors object.
+     */
     no_whitespace (attrName) {
         const regex = /^\S+$/
         const valid = regex.test(this.data[attrName])
@@ -140,13 +176,19 @@ class Validator {
         return valid
     }
 
-    __user_readonly (attrName) {
+    /** Sets a given attribute to a default value if its type is string, otherwise sets it to 0. 
+     * This method is used for attributes that should be read-only.
+     */
+    _user_readonly (attrName) {
         this.data[attrName] = this.data_types[attrName] === "string" ? "" : 0
         return true
     }
 
-    __user_writeonly (attrName) {
-        this.__write_only_attributes.push(attrName)
+    /** Adds a given attribute to the list of write-only attributes. 
+     * This method is used for attributes that should only be written to the database and not read.
+     */
+    _user_writeonly (attrName) {
+        this._write_only_attributes.push(attrName)
         return true
     }
 }

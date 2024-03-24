@@ -5,10 +5,17 @@ const send_email = require('../utils/send_email');
 const User = require('./../models/user');
 const Validation = require('./../models/validation')
 
+// Regular expressions for username and email validation
 const username_regex = /^(?![_.])[0-9a-zA-Z._+]+(?<![_.])$/
 const email_regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
 
+/**
+ * User validator class that extends the Validation model.
+ */
 class userValidator extends Validator {
+    /**
+     * Initialize the validator with User model, 'users' table, and user data
+     */
     constructor (data) {
         super(User, 'users', data)
     }
@@ -17,7 +24,7 @@ class userValidator extends Validator {
 
     id_valid () {
         return (
-            this.__user_readonly("id")
+            this._user_readonly("id")
         )
     }
 
@@ -46,7 +53,7 @@ class userValidator extends Validator {
             this.max_length("password", 15) &&
             this.no_whitespace("password") &&
             await this.encripted("password") &&
-            this.__user_writeonly("password")
+            this._user_writeonly("password")
         )
     }
 
@@ -65,22 +72,23 @@ class userValidator extends Validator {
 
     status_valid () {
         return (
-            this.__user_readonly("status")
+            this._user_readonly("status")
         )
     }
 
     date_created_valid () {
         return (
-            this.__user_readonly("date_created")
+            this._user_readonly("date_created")
         )
     }
 
     token_valid () {
         return (
-            this.__user_readonly("token")
+            this._user_readonly("token")
         )
     }
 
+    /** Combines individual validations to perform an overall validation. This method determines `data_valid` attribute */
     async validate_all() {
         const id_valid = this.id_valid()
         const email_valid = await this.email_valid()
@@ -104,8 +112,11 @@ class userValidator extends Validator {
             token_valid
     }
 
+    /**
+     * Formats user data by converting the username and email fields to lowercase and ensures that all data types are correctly formatted according to the _format_data method.
+     */
     async format_data () {
-        await this.__format_data()
+        await this._format_data()
 
         if ( this.data["username"] ) {
             this.data["username"] = this.data["username"].toLowerCase()
@@ -120,7 +131,7 @@ class userValidator extends Validator {
         
     }
 
-    async __send_validation_email(code) {
+    async _send_validation_email(code) {
         let opts = {}
         opts.subject = util.format(config.validation_email.subject, config.appName)
         opts.text = util.format(config.validation_email.text, 
@@ -132,7 +143,7 @@ class userValidator extends Validator {
     }
 
     async create () {
-        return await this.__create()
+        return await this._create()
     }
 
 }
