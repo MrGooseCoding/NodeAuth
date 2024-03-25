@@ -72,6 +72,14 @@ describe('Database', () => {
     
         expect(fail).to.equal(false)
     })
+
+    it("should delete an item from the database", async () => {
+        await database.deleteItem(db, table, {id:dummyData.id})
+      
+        // Assert that the item was successfully deleted
+        const data = await database.get(db, table, { id: dummyData.id })
+        expect(data).to.be.empty
+    })
     
     it("should return data types", async () => {
         const data_types = await database.getDataTypes(db, 'users')

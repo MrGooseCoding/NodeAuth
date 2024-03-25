@@ -87,6 +87,21 @@ function deleteAll(db, table) {
     })
 }
 
+function deleteItem(db, table, identifierAttr) {
+    const whereClause = getWhereClause(identifierAttr)
+  
+    const query = `DELETE FROM ${table} WHERE ${whereClause}`
+  
+    return new Promise((resolve, reject) => {
+        db.run(query, (err) => {
+            if (err) {
+            return reject(err)
+            }
+            resolve()
+        })
+    })
+}  
+
 function getDataTypes(db, table) {
     const query = `PRAGMA table_info(${table})`
 
@@ -99,4 +114,4 @@ function getDataTypes(db, table) {
 }
 
 
-module.exports = {open, close, get, getDataTypes, search, insert, write, deleteAll}
+module.exports = {open, close, get, getDataTypes, search, insert, write, deleteAll, deleteItem}
