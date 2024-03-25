@@ -1,4 +1,3 @@
-const database = require('../database/database');
 const Model = require('../models/model');
 const { generate_hash } = require('../utils/generators');
 
@@ -23,7 +22,6 @@ class Validator {
         this.model = model
         this.table = table
         this.data = data
-        this.db = database.open()
     }
 
     /** Asynchronously retrieves the data types from the database and transforms them into JavaScript types.
@@ -86,7 +84,7 @@ class Validator {
         }
     }
 
-    /** Checks if a given attribute is unique in the database. 
+    /** Checks if a given attribute is unique in the model's database. 
      * It returns false if the attribute is not unique, adding an error message to the errors object.
      */
     async unique (attrName) {
@@ -94,15 +92,13 @@ class Validator {
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
 
-        const data = await database.get(
-            this.db, this.table,
-            identifierAttr
-        );
-        if (data[0]) {
+        const data = await this.model.objects_getBy(attrName, this.data[attrName])
+
+        if (!data["error"]) {
             this.errors[attrName] = `${attrName} has to be unique`;
         }
 
-        return !data[0];
+        return Boolean(data["error"]);
     }
 
     /** Validates that a given attribute is not null. 
