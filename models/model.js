@@ -1,15 +1,16 @@
 const database = require('./../database/database')
 
 class Model {
-    constructor (data) {
+    constructor (data, table) {
         this.data = data
+        this.table = table
     }
 
-    static async __create (data) {
+    static async _create (data) {
         const db = database.open()
 
         await database.insert(db, this.table, data).then(data => data)
-        return new User(data)
+        return new Model(data)
     }
 
     static async get_data_types() {
@@ -17,10 +18,22 @@ class Model {
         return await database.getDataTypes(db, this.table)
     }
 
-    static async objects_getBy(attrName, attrValue) {
+    static async objects_deleteBy(attrName, attrValue) {
         const db = database.open()
+
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
+
+        await database.deleteItem(db, this.table, identifierAttr)
+
+    }
+
+    static async objects_getBy(attrName, attrValue) {
+        const db = database.open()
+
+        const identifierAttr = {}
+        identifierAttr[attrName] = attrValue
+
         const data = await database.get(db, 'users', identifierAttr)
 
         return data[0] ? new this(data[0]) : { error: `${this.name} does not exist` }
@@ -47,15 +60,13 @@ class Model {
         const identifierAttr = {}
         identifierAttr["id"] = this.data.id
 
-        database.write(db, this.table, this.data, identifierAttr)
+        await database.write(db, this.table, this.data, identifierAttr)
+
         return this
     }
 
     json () {
         let json = this.data
-        if (removePassword) {
-            delete json["password"]
-        }
         return json
     }
 

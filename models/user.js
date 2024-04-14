@@ -1,6 +1,6 @@
 const Model = require('./model')
 const bcrypt = require('bcrypt');
-const { generate_uuid, generate_current_date } = require('./../utils/generators');
+const { generate_uuid, generate_date_string } = require('./../utils/generators');
 const database = require('../database/database')
 
 class User extends Model{
@@ -9,15 +9,15 @@ class User extends Model{
 
     constructor (data = {}) { // Note that this method does not insert anything in the database
         "initializes a User class, without inserting anything in the database"
-        super(data)
+        super(data, 'users')
     }
 
     static async create(data) { 
         data.id = generate_uuid()
         data.token = generate_uuid()
-        data.date_created = generate_current_date()
+        data.date_created = generate_date_string()
 
-        return await this.__create(data)
+        return await this._create(data)
     }
 
     static async authenticate (username, password) {

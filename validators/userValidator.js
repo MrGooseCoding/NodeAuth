@@ -3,8 +3,7 @@ const util = require('util')
 const config = require('./../config.js')
 const send_email = require('../utils/send_email');
 const User = require('./../models/user');
-const Validation = require('./../models/validation')
-
+const { generate_validation_code } = require('./../utils/generators');
 // Regular expressions for username and email validation
 const username_regex = /^(?![_.])[0-9a-zA-Z._+]+(?<![_.])$/
 const email_regex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
@@ -127,16 +126,14 @@ class userValidator extends Validator {
         }
     }
 
-    async validate_email () {
-        
-    }
+    async send_validation_email() {
+        const code = generate_validation_code()
 
-    async _send_validation_email(code) {
         let opts = {}
         opts.subject = util.format(config.validation_email.subject, config.appName)
         opts.text = util.format(config.validation_email.text, 
             this.data.display_name,
-            '',
+            code,
             config.appName)
         opts.to = this.data.email
         await send_email(opts)

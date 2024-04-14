@@ -2,10 +2,11 @@ const config = {
     dbPath: 'database.db',
     appName: 'NodeAuth',
 
+    validate_email: true, // Validate email address during registration and login
     validation_email: {
         subject: `Email Validation at %s`,
         text: `Hi %s,
-Thank you for registering on our website. :
+Thank you for registering on our website. To validate your email, please introduce the following validation code:
 
 %s
 

@@ -3,6 +3,8 @@ const router = express.Router()
 const User = require('./../models/user')
 const userValidator = require('./../validators/userValidator')
 const api = require('./api')
+const Validation = require('./../models/validation')
+const config = require('./../config')
 
 api('/search/', async (req, res, validator, user) => {
     if (!validator.not_null("username")) {
@@ -29,11 +31,20 @@ api('/getById/', async (req, res, validator, user) => {
 
 api('/create/', async (req, res, validator, user) => {
     await validator.validate_all()
-    console.log("Hey")
 
     const data = await validator.create()
+    config.validate_email && await validator.send_validation_email()
     return res.status(data[0] ? 201 : 400).json(data[1])
 }, router, userValidator)
+
+config.validate_email && api('/validate_code/:code/', async (req, res, validator, user) => {
+    const { code } = req.params
+    
+    const valid = await Validation.validate(code, user)
+
+    return res.status(200).json({error: "Not accepted"})
+
+}, router, userValidator, true)
 
 api('/update/:attrName/', async (req, res, validator, user) => {
     const options = [
