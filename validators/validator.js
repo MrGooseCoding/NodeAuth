@@ -69,10 +69,10 @@ class Validator {
             return [false, this.errors]
         }
         try {
-            this.model.create(this.data)
+            var modelInstance = await this.model.create(this.data)
 
             const readable_data = {}
-            for (var key in this.data) {
+            for (var key in modelInstance.json()) {
                 if (!this._write_only_attributes.includes(key) ) {
                     readable_data[key] = this.data[key]
                 }
