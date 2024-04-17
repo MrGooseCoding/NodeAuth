@@ -10,7 +10,7 @@ class Model {
         const db = database.open()
 
         await database.insert(db, this.table, data).then(data => data)
-        return new Model(data)
+        return new this(data)
     }
 
     static async get_data_types() {
