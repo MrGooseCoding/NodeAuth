@@ -1,7 +1,6 @@
 const Model = require('./model')
 const bcrypt = require('bcrypt');
 const { generate_uuid, generate_date_string } = require('./../utils/generators');
-const database = require('../database/database')
 
 class User extends Model{
     static name = "User"
@@ -13,7 +12,6 @@ class User extends Model{
     }
 
     static async create(data) { 
-        data.id = generate_uuid()
         data.token = generate_uuid()
         data.date_created = generate_date_string()
 

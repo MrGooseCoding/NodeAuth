@@ -14,7 +14,7 @@ function api (url, fun, router, modelValidator, tokenRequired = false) {
 
             const data = await User.objects_getBy("token", v.data.token)
             if (data["error"]) {
-                res.status(400).json(data.json())
+                res.status(400).json({ error: data["error"]})
                 return
             }
 

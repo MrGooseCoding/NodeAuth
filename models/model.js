@@ -1,4 +1,5 @@
 const database = require('./../database/database')
+const { generate_uuid } = require('./../utils/generators')
 
 class Model {
     constructor (data, table) {
@@ -8,6 +9,8 @@ class Model {
 
     static async _create (data) {
         const db = database.open()
+
+        data.id = generate_uuid()
 
         await database.insert(db, this.table, data).then(data => data)
         return new this(data)
@@ -34,7 +37,7 @@ class Model {
         const identifierAttr = {}
         identifierAttr[attrName] = attrValue
 
-        const data = await database.get(db, 'users', identifierAttr)
+        const data = await database.get(db, this.table, identifierAttr)
 
         return data[0] ? new this(data[0]) : { error: `${this.name} does not exist` }
     }

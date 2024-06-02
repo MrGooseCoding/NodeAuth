@@ -13,7 +13,7 @@ function generate_uuid() {
 }
 
 function generate_date_string(date = new Date()) {
-    return date.toISOString().slice(0, 19).replace('T', ' ') + 'Z';
+    return date.toISOString()
 }
 
 function generate_hash (value) {

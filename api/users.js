@@ -33,16 +33,22 @@ api('/create/', async (req, res, validator, user) => {
     await validator.validate_all()
 
     const data = await validator.create()
-    config.validate_email && await validator.send_validation_email()
+    
+    config.validate_email & data[0] && await validator.send_validation_email()
+
     return res.status(data[0] ? 201 : 400).json(data[1])
 }, router, userValidator)
 
-config.validate_email && api('/validate_code/:code/', async (req, res, validator, user) => {
+config.validate_email && api('/validateEmail/:code/', async (req, res, validator, user) => {
     const { code } = req.params
     
     const valid = await Validation.validate(code, user)
 
-    return res.status(200).json({error: "Not accepted"})
+    if (valid["error"]) {
+        return res.status(400).json(valid["error"])
+    }
+
+    return res.status(valid ? 200 : 400).json({valid})
 
 }, router, userValidator, true)
 

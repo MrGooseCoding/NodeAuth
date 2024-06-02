@@ -22,6 +22,7 @@ class Validator {
         this.model = model
         this.table = table
         this.data = data
+        this.modelInstance;
     }
 
     /** Asynchronously retrieves the data types from the database and transforms them into JavaScript types.
@@ -69,10 +70,10 @@ class Validator {
             return [false, this.errors]
         }
         try {
-            var modelInstance = await this.model.create(this.data)
+            this.modelInstance = await this.model.create(this.data)
 
             const readable_data = {}
-            for (var key in modelInstance.json()) {
+            for (var key in this.modelInstance.json()) {
                 if (!this._write_only_attributes.includes(key) ) {
                     readable_data[key] = this.data[key]
                 }
