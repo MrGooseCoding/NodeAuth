@@ -45,7 +45,7 @@ config.validate_email && api('/validateEmail/:code/', async (req, res, validator
     const valid = await Validation.validate(code, user)
 
     if (valid["error"]) {
-        return res.status(400).json(valid["error"])
+        return res.status(400).json(valid)
     }
 
     return res.status(valid ? 200 : 400).json({valid})
