@@ -1,4 +1,5 @@
 const Model = require('./model')
+const User = require('./user')
 const { generate_validation_code, generate_date_string } = require('./../utils/generators');
 
 class Validation extends Model{
@@ -45,6 +46,12 @@ class Validation extends Model{
         }
 
         return true
+    }
+
+    static async register_validated (user) {
+        await this.objects_deleteBy("user", user.json().id)
+
+        await user.change("validated", 1)
     }
 }
 

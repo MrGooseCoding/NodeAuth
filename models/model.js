@@ -68,6 +68,10 @@ class Model {
         return this
     }
 
+    async delete () {
+        await this.objects_deleteBy("id", this.data.id)
+    }
+
     json () {
         let json = this.data
         return json

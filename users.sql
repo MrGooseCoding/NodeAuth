@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"status"	INTEGER DEFAULT 0,
 	"date_created"	DATETIME,
 	"token"	TEXT UNIQUE,
+	"validated"	INTEGER DEFAULT 0,
 	PRIMARY KEY("id")
 );
 COMMIT;

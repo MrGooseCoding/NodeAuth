@@ -48,6 +48,8 @@ config.validate_email && api('/validateEmail/:code/', async (req, res, validator
         return res.status(400).json(valid)
     }
 
+    await Validation.register_validated(user)
+
     return res.status(valid ? 200 : 400).json({valid})
 
 }, router, userValidator, true)

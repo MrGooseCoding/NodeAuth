@@ -3,7 +3,6 @@ const util = require('util')
 const config = require('./../config.js')
 const send_email = require('../utils/send_email');
 const User = require('./../models/user');
-const { generate_validation_code } = require('./../utils/generators');
 const Validation = require('./../models/validation.js')
 // Regular expressions for username and email validation
 const username_regex = /^(?![_.])[0-9a-zA-Z._+]+(?<![_.])$/
@@ -82,6 +81,12 @@ class userValidator extends Validator {
         )
     }
 
+    validated_valid () {
+        return (
+            this._user_readonly("validated")
+        )
+    }
+    
     token_valid () {
         return (
             this._user_readonly("token")
@@ -98,6 +103,7 @@ class userValidator extends Validator {
         const description_valid = this.description_valid()
         const status_valid = this.status_valid()
         const date_created_valid = this.date_created_valid()
+        const validated_valid = this.validated_valid()
         const token_valid = this.token_valid()
 
         this.data_valid = 
@@ -109,6 +115,7 @@ class userValidator extends Validator {
             description_valid &&
             status_valid &&
             date_created_valid &&
+            validated_valid &&
             token_valid
     }
 
