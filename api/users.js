@@ -86,6 +86,12 @@ api('/login/', async (req, res, validator, user) => {
     if (!validator.not_null("username")) {
         return res.status(400).json(validator.errors)
     }
+
+    if (user.json().validated == 0) {
+        res.status(400).json({ error: "Not a validated user" })
+        return
+    }
+
     const is_unique = await validator.unique("username")
 
     if (is_unique) {

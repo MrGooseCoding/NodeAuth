@@ -17,6 +17,7 @@ const dummyUser = {
     description: 'This is my dummy description',
     password: "$2b$10$jdcZvrstrll2CThEV5HCEOH3CYf/1y5pl5NMOLQaAJSvgNCxJKpDe", // hash for password
     status: 0,
+    validated: 1,
     date_created: '2023-11-16 19:12:19',
     token: 'f7131fcc-a979-4df1-8164-ffd0fb68a557'
 }

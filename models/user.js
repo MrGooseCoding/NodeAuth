@@ -1,4 +1,5 @@
 const Model = require('./model')
+const config = require('./../config')
 const bcrypt = require('bcrypt');
 const { generate_uuid, generate_date_string } = require('./../utils/generators');
 
@@ -14,6 +15,7 @@ class User extends Model{
     static async create(data) { 
         data.token = generate_uuid()
         data.date_created = generate_date_string()
+        data.validated = config.validate_email ? 0 : 1
 
         return await this._create(data)
     }
