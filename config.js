@@ -2,7 +2,7 @@ const config = {
     dbPath: 'database.db',
     appName: 'NodeAuth',
 
-    validate_email: true, // Validate email address during registration and login
+    validate_email: false, // Validate email address during registration and login
     validation_email: {
         subject: `Email Validation at %s`,
         text: `Hi %s,
