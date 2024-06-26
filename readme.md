@@ -31,6 +31,8 @@ It's time to download our dependencies. To do so, simply run:
 npm install
 ```
 
+Now for the final part, setting up the database. To do so, create a `database.db` file in the root directory and create tables in it using the schemas provided in `users.sql` and `validation.sql`  
+
 Our project is all set!
 
 You can run it in two ways
