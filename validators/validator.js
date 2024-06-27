@@ -52,14 +52,18 @@ class Validator {
         for (var key in this.data_types) {
             const value = this.data[key]
 
-            if (this.data_types[key] === 'string') {
-                formated_data[key] = value ? String(value).trim() : ""
-            } else {
-                formated_data[key] = value ? Number(value) : 0
+            if (!Boolean(value)) {
+                if (this.data_types[key] === 'string') {
+                    formated_data[key] = value ? String(value).trim() : ""
+                } else {
+                    formated_data[key] = value ? Number(value) : 0
+                }
+
+                this.data[key] = formated_data[key]
             }
+
         }
 
-        this.data = formated_data
     }
 
     /** Asynchronously creates a new record in the database if the data is valid. 
@@ -100,6 +104,25 @@ class Validator {
         }
 
         return Boolean(data["error"]);
+    }
+
+    /** Validates that a given attribute is of a selected type
+     */
+    of_type (attrName, type) {
+        const attrValue = this.data[attrName]
+
+        const type_name = type.name.toLowerCase()
+
+        const isInstance = typeof attrValue === type_name || attrValue instanceof type
+
+        const isNull = !Boolean(attrValue)
+
+        const valid = isNull || isInstance
+
+        if (!valid) {
+            this.errors[attrName] = `${attrName} is not an instance of ${type_name}`
+        }
+        return valid
     }
 
     /** Validates that a given attribute is not null. 

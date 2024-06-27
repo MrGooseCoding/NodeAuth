@@ -30,6 +30,7 @@ class userValidator extends Validator {
     async email_valid () {
         return (
             this.not_null("email") &&
+            this.of_type("email", String) &&
             this.max_length("email", 254) &&
             this.follows_regex("email", email_regex) && 
             await this.unique("email")
@@ -39,6 +40,7 @@ class userValidator extends Validator {
     async username_valid () {
         return (
             this.not_null("username") &&
+            this.of_type("username", String) &&
             this.max_length("username", 20) &&
             this.follows_regex("username", username_regex) &&
             await this.unique("username")
@@ -48,6 +50,7 @@ class userValidator extends Validator {
     async password_valid () {
         return (
             this.not_null("password") &&
+            this.of_type("password", String) &&
             this.min_length("password", 8) &&
             this.max_length("password", 15) &&
             this.no_whitespace("password") &&
@@ -59,31 +62,36 @@ class userValidator extends Validator {
     display_name_valid () {
         return (
             this.not_null("display_name") && 
+            this.of_type("display_name", String) &&
             this.max_length("display_name", 30)
         )
     }
-
+    
     description_valid () {
         return (
+            this.of_type("description", String) &&
             this.max_length("description", 5000)
         )
     }
-
+    
     status_valid () {
         return (
-            this._user_readonly("status")
+            this._user_readonly("status") &&
+            this.of_type("status", Number)
         )
     }
-
+    
     date_created_valid () {
         return (
-            this._user_readonly("date_created")
+            this._user_readonly("date_created") &&
+            this.of_type("date_created", String)
         )
     }
-
+    
     validated_valid () {
         return (
-            this._user_readonly("validated")
+            this._user_readonly("validated") &&
+            this.of_type("validated", Number)
         )
     }
     
