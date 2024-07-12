@@ -76,14 +76,7 @@ class Validator {
         try {
             this.modelInstance = await this.model.create(this.data)
 
-            const readable_data = {}
-            for (var key in this.modelInstance.json()) {
-                if (!this._write_only_attributes.includes(key) ) {
-                    readable_data[key] = this.data[key]
-                }
-            }
-
-            return [true, readable_data]
+            return [true, this.modelInstance]
         } catch (e) {
             return [false, {error:'Invalid request'}]
         }
@@ -113,7 +106,7 @@ class Validator {
 
         const type_name = type.name.toLowerCase()
 
-        const isInstance = typeof attrValue === type_name || attrValue instanceof type
+        const isInstance = typeof attrValue == type_name || attrValue instanceof type
 
         const isNull = !Boolean(attrValue)
 
