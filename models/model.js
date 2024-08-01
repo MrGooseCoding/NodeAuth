@@ -7,10 +7,12 @@ class Model {
         this.table = table
     }
 
-    static async _create (data) {
+    static async _create (data, use_id=true) {
         const db = database.open()
 
-        data.id = generate_uuid()
+        const insert_id = (data) => data.id = generate_uuid()
+        
+        use_id && insert_id(data)
 
         await database.insert(db, this.table, data).then(data => data)
         return new this(data)
@@ -68,8 +70,29 @@ class Model {
         return this
     }
 
+    async refresh () {
+        const db = database.open()
+        const identifierAttr = { id: this.data.id }
+        const new_data = await database.get(db, this.table, identifierAttr)
+
+        if (!new_data[0]) {
+            return false
+        }
+
+        this.data = new_data[0]
+        return true
+    }
+
     async delete () {
-        await this.objects_deleteBy("id", this.data.id)
+        const db = database.open()
+
+        const identifierAttr = { id: this.data.id }
+
+        return await database.deleteItem(db, this.table, identifierAttr)
+    }
+
+    getAttr(attrName) {
+        return this.data[attrName]
     }
 
     json () {
